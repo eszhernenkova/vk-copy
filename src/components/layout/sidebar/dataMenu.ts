@@ -1,6 +1,7 @@
 import * as Icons from '@mui/icons-material'
+import { IMenuItem } from '../../../types'
 
-export const menu = [
+export const menu: IMenuItem[] = [
     {
        tittle: 'Моя страница',
        link: '/profile',

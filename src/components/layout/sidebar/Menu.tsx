@@ -33,7 +33,6 @@ const Menu = () => {
                     </ListItemButton>
                     </ListItem>
                 ))}
-                    
             </List>
         </Card>
     </>

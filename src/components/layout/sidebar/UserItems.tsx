@@ -2,38 +2,13 @@ import { Avatar, Box, Card, List, ListItem, ListItemButton, ListItemIcon, ListIt
 import { Link, useNavigate } from 'react-router-dom'
 import { FC } from 'react'
 import { QuestionAnswer } from '@mui/icons-material'
+import { users } from './dataUsers'
 
 const UserItems: FC = () => {
 
   const navigate = useNavigate();
 
-  const users = [
-    {
-      _id: 'eger',
-      avatar: '/avatar.png',
-      name: 'Петя',
-      isInNetwork: true
-    },
-    {
-      _id: 'egerrrr',
-      avatar: '/avatar.png',
-      name: 'Вася',
-      isInNetwork: false
-    },
-    {
-      _id: 'eeeger',
-      avatar: '/avatar.png',
-      name: 'Федя',
-      isInNetwork: true
-    },
-    {
-      _id: 'eggger',
-      avatar: '/avatar.png',
-      name: 'Дима',
-      isInNetwork: false
-    },
-
-  ]
+  
 
   return (
     <>
