@@ -1,7 +1,9 @@
 import { Alert, Button, ButtonGroup, Grid, TextField } from '@mui/material'
-import React, { SyntheticEvent, useState } from 'react'
+import  { SyntheticEvent, useState } from 'react'
 import { IUserData } from './authTypes'
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../../store/store'
+import { login, register } from '../../store/user.slice'
 
 const Auth = () => {
   const [isRegForm, setIsRegForm] = useState(false)
@@ -10,42 +12,20 @@ const Auth = () => {
     email: '',
     password: ''
   } as IUserData)
-  const [error, setError] = useState('')
+  
+  const dispatch = useDispatch<AppDispatch>()
+  const {error, loading, email} = useSelector((state: RootState) => state.user)
+
   const handleLogin = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const auth = getAuth()
 
     if(isRegForm){
-      try {
-        await createUserWithEmailAndPassword(auth, userData.email, userData.password)
-      } catch (error) {
-        if(error instanceof Error){
-          error.message && setError(error.message)
-        }
-      }
-      console.log('register')
+      dispatch(register(userData))
     } else {
-      console.log('auth')
+      dispatch(login(userData))
     }
-
-  //   try {
-  //     await signInWithEmailAndPassword(auth, userData.email, userData.password)
-  //   } catch (error) {
-  //     if(error instanceof Error){
-  //       error.message && setError(error.message)
-  //     }
-  //   }
-  //   console.log('register')
-  // } else {
-  //   console.log('auth')
-  // }
-  //   console.log(userData.email, userData.password)
-  //   setUserData({
-  //     email: '',
-  //     password: ''
-  //   })
-
-}
+    setUserData({ email: '', password: '' })
+  }
 
   return (
     <>

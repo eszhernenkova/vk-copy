@@ -2,7 +2,6 @@ import React, {  StrictMode } from 'react';
 import { Provider } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
-import { initializeApp } from "firebase/app";
 import firebase from 'firebase/compat/app'
 
 
