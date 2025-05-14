@@ -1,7 +1,7 @@
 
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, getAuth, signOut } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, getAuth, signOut, updateProfile } from 'firebase/auth'
 
 
 interface UserState {
@@ -17,14 +17,18 @@ const initialState: UserState ={
 };
 
 export const register = createAsyncThunk<
-  string, //  возвращаем email
-  { email: string; password: string },
-  { rejectValue: string } // для корректной типизации reject
->("user/register", async ({ email, password }, thunkAPI) => {
+  string, 
+  { email: string; password: string; name: string; },
+  { rejectValue: string } 
+>("user/register", async ({ email, password, name }, thunkAPI) => {
   try {
     const auth = getAuth();
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    return userCredential.user.email!;
+	const user = userCredential.user;
+	await updateProfile(user, {
+		displayName: name,
+	});
+    return user.email!;
   } catch (error) {
     if (error instanceof Error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -49,9 +53,9 @@ export const register = createAsyncThunk<
 // )
 
 export const login = createAsyncThunk<
-  string, // что возвращает (email)
-  { email: string; password: string }, // что принимает
-  { rejectValue: string } // что возвращает в случае reject
+  string, 
+  { email: string; password: string }, 
+  { rejectValue: string } 
 >(
   'user/login',
   async ({ email, password }, thunkAPI) => {
@@ -86,7 +90,7 @@ export const login = createAsyncThunk<
 export const logout = createAsyncThunk('user/logout', async () => {
 	const auth = getAuth()
 	await signOut(auth)
-  })
+})
 
 export const userSlice = createSlice({
     name: 'user',
