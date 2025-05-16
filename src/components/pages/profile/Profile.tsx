@@ -1,10 +1,17 @@
-import React from 'react'
-import { useParams } from 'react-router-dom';
+import { FC } from 'react';
+import { useAuth } from '../../providers/useAuth';
+import Card from '../../ui/Card';
+import { Avatar } from '@mui/material';
 
-const Profile = () => {
-  const { id } = useParams();
+
+const Profile: FC = () => {
+  const {user} = useAuth()
+
   return (
-    <div>Профиль пользователя: {id}</div>
+    <Card>
+        <Avatar src={user?.avatar}></Avatar>
+        <h1>{user?.name}</h1>
+    </Card>
   )
 }
 

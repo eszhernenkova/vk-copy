@@ -15,7 +15,7 @@ const User = () => {
     const handleLogout = () => {
         dispatch(logout()); 
         navigate('/auth'); 
-      };
+    };
 
   return (
     <Card 

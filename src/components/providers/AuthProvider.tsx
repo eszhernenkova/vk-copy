@@ -2,12 +2,14 @@ import React, { createContext, FC, useEffect, useMemo, useState } from 'react'
 import { IUser, TypeSetState } from '../../types'
 import { Auth, getAuth, onAuthStateChanged } from 'firebase/auth'
 import { users } from '../layout/sidebar/dataUsers'
+import { Firestore, getFirestore } from 'firebase/firestore'
 
 
 interface IContext {
     user: IUser | null
     setUser: TypeSetState<IUser | null>
     ga: Auth
+    db: Firestore
 }
 
 interface AuthProviderProps {
@@ -19,6 +21,7 @@ export const AuthContext = createContext<IContext>({} as IContext)
 export const AuthProvider: FC<AuthProviderProps> = ({ children })=> {
     const [user, setUser] = useState<IUser | null>(null)
     const ga = getAuth()
+    const db = getFirestore()
 
 
     useEffect(()=> {
@@ -42,7 +45,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children })=> {
         user,
         setUser,
         ga,
-    }), [user, ga])
+        db
+    }), [user, ga, db])
 
     return (
         <AuthContext.Provider value={values}>{ children }</AuthContext.Provider>

@@ -24,28 +24,71 @@ const Auth = () => {
 
   const {error, loading, email} = useSelector((state: RootState) => state.user)
 
+  // const handleLogin = async (e: SyntheticEvent<HTMLFormElement>) => {
+  //   e.preventDefault()
+  //   if (userData.password.length < 6) {
+  //     dispatch({ type: "user/setError", payload: "Пароль должен содержать минимум 6 символов" });
+  //     return;
+  //   }
+  //   if (!userData.name.trim()) {
+  //     dispatch({ type: 'user/setError', payload: 'Имя не может быть пустым' });
+  //     return;
+  //   }
+  //   const result = await dispatch(register(userData)).unwrap(); // Ждём завершения
+  //     if (result) {
+  //       navigate('/'); // Редирект после успешной регистрации
+  //     } else {
+  //     const result = await dispatch(login(userData)).unwrap(); // Ждём завершения
+  //     if (result) {
+  //       navigate('/'); // Редирект после успешного входа
+  //     }
+  //   }
+  //   setUserData({ email: '', password: '', name: '' })
+  // }
+
+
   const handleLogin = async (e: SyntheticEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     if (userData.password.length < 6) {
-      dispatch({ type: "user/setError", payload: "Пароль должен содержать минимум 6 символов" });
+      dispatch({ type: 'user/setError', payload: 'Пароль должен содержать минимум 6 символов' });
       return;
     }
-    if (!userData.name.trim()) {
+    if (!userData.name.trim() && isRegForm) {
       dispatch({ type: 'user/setError', payload: 'Имя не может быть пустым' });
       return;
     }
-    const result = await dispatch(register(userData)).unwrap(); // Ждём завершения
-      if (result) {
-        navigate('/'); // Редирект после успешной регистрации
-      } else {
-      const result = await dispatch(login(userData)).unwrap(); // Ждём завершения
-      if (result) {
-        navigate('/'); // Редирект после успешного входа
-      }
-    }
-    setUserData({ email: '', password: '', name: '' })
-  }
 
+    try {
+      if (isRegForm) {
+        const result = await dispatch(register(userData)).unwrap();
+        if (result) {
+          navigate('/');
+        }
+      } else {
+        const result = await dispatch(login(userData)).unwrap();
+        if (result) {
+          navigate('/');
+        }
+      }
+    } catch (err: any) {
+      if (err.message === 'Firebase: Error (auth/email-already-in-use).') {
+        dispatch({ type: 'user/setError', payload: 'Этот email уже зарегистрирован. Попробуйте войти.' });
+        const loginResult = await dispatch(login(userData)).unwrap();
+        if (loginResult) {
+          navigate('/');
+        }
+      } else if (err.message === 'Firebase: Error (auth/wrong-password).') {
+        dispatch({ type: 'user/setError', payload: 'Неправильный пароль. Попробуйте снова.' });
+      } else if (err.message === 'Firebase: Error (auth/user-not-found).') {
+        dispatch({ type: 'user/setError', payload: 'Пользователь с таким email не найден.' });
+      } else {
+        dispatch({ type: 'user/setError', payload: err.message || 'Ошибка входа' });
+      }
+      console.error('Auth error:', err);
+    }
+
+    setUserData({ email: '', password: '', name: '' });
+  };
   useEffect(() => {
     if(user) {
       navigate('/')

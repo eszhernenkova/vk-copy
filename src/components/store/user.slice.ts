@@ -25,6 +25,7 @@ export const register = createAsyncThunk<
     const auth = getAuth();
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 	const user = userCredential.user;
+	console.log('Updating profile with name:', name);
 	await updateProfile(user, {
 		displayName: name,
 	});

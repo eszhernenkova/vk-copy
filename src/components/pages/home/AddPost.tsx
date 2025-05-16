@@ -1,7 +1,8 @@
 import { Box, TextField } from '@mui/material'
 import { FC, KeyboardEvent, useState } from 'react'
 import { IPost, TypeSetState } from '../../../types'
-import { users } from '../../layout/sidebar/dataUsers'
+import { useAuth } from '../../providers/useAuth'
+import { addDoc, collection } from 'firebase/firestore'
 
 interface IAddPost {
   setPosts: TypeSetState<IPost[]>
@@ -9,13 +10,24 @@ interface IAddPost {
 
 const AddPost: FC<IAddPost> = ({ setPosts }) => {
   const [content, setContent] = useState<string>('')
+  const {user, db} = useAuth();
 
-  const addPostHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-    if(e.key === 'Enter')
+  const addPostHandler = async (e: KeyboardEvent<HTMLInputElement>) => {
+    if(e.key === 'Enter' && user)
       {
+        try {
+           await addDoc(collection(db, 'posts'), {
+            author: user,
+            content,
+            createdAt: '5 минут назад'
+          })
+        } catch(e) {
+          console.error('Error adding document', e)
+        }
+
         setPosts(prev => [
           {
-            author: users[0],
+            author: user,
             content,
             createdAt: '5 минут назад'
           },
@@ -23,13 +35,14 @@ const AddPost: FC<IAddPost> = ({ setPosts }) => {
         ])
         setContent('')
       }
-  }
+  } 
 
   return (
     <Box sx={{
         border: '1px solid #e2e2e2',
         borderRadius: '10px',
-        padding: 2
+        padding: 2,
+        marginTop: 4
     }}>
       <TextField 
         label='Расскажи, что у тебя случилось'

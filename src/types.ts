@@ -24,3 +24,8 @@ export interface IMenuItem {
     link: string,
     icon: OverridableComponent<SvgIconTypeMap<{}, "svg">> & { muiName: string; }
 }
+
+export interface IMessage {
+    user: IUser,
+    message: string
+}

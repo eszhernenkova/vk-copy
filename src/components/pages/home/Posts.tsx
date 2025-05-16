@@ -1,34 +1,48 @@
-import React, { FC } from 'react'
+import  { FC, useEffect, useState } from 'react'
 import { IPost } from '../../../types'
 import { Avatar, Box, ImageList, ImageListItem } from '@mui/material'
 import { Link } from 'react-router-dom'
+import { collection, onSnapshot } from 'firebase/firestore'
+import { useAuth } from '../../providers/useAuth'
+import { initialPosts } from './initialPosts'
+import Card from '../../ui/Card'
 
 interface IPosts {
     posts: IPost[]
 }
 
-const Posts: FC<IPosts> = ({posts}) => {
+const Posts: FC<IPosts> = () => {
+  const [posts, setPosts] = useState<IPost[]>(initialPosts)
+  const { db } = useAuth()
+
+
+    useEffect(() => {
+        const unsub = onSnapshot(collection(db, 'posts'), (doc) => {
+            doc.forEach((d) => {
+                setPosts(prev => [...prev, d.data() as IPost])
+            })
+        })
+    
+        return () => {
+          unsub()
+        }
+    }, [db])
+
   return (
   <> 
     {posts.map((post, index) => (
-        <Box sx={{
-            border: '1px solid #e2e2e2',
-            borderRadius: '10px',
-            padding: 2,
-            marginTop: 4
-        }}
-            key={`Post-${index}`}
-        >
+        <Card key={`Post-${index}`}>
             <Link 
-            key={post.author._id}
-            to={`/profile/${post.author._id}`} 
-            style={{
-                display: 'flex', 
-                alignItems: 'center', 
-                textDecoration: 'none', 
-                color: '#111',
-                marginBottom: 12,
-            }}>
+                key={post.author._id}
+                to={`/profile/${post.author._id}`} 
+                style={{
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    textDecoration: 'none', 
+                    color: '#111',
+                    marginBottom: 12,
+                }}
+            >
                 <Box sx={{position: 'relative', marginRight: 2, borderRadius: '50%'}}>
                     <Avatar sx={{width: 46, height: 46, borderRadius: 3,}} src={post.author.avatar} alt="" />
                     {post.author.isInNetwork && 
@@ -64,7 +78,7 @@ const Posts: FC<IPosts> = ({posts}) => {
                     ))}
                 </ImageList>
             )}
-        </Box>
+        </Card>
     ))}
     </>
   )   
